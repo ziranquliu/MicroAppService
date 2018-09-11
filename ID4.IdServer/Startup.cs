@@ -24,10 +24,15 @@ namespace ID4.IdServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddIdentityServer()
+            //.AddDeveloperSigningCredential()
+            //.AddInMemoryApiResources(Config.GetApiResources())
+            //.AddInMemoryClients(Config.GetClients());
+
             services.AddIdentityServer()
-            .AddDeveloperSigningCredential()
-            .AddInMemoryApiResources(Config.GetApiResources())
-            .AddInMemoryClients(Config.GetClients());
+        .AddDeveloperSigningCredential()
+        .AddInMemoryApiResources(Config.GetApiResources1())
+        .AddInMemoryClients(Config.GetClients1());
 
             //services.AddMvc();
         }
