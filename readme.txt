@@ -67,4 +67,5 @@ dotnet ocelot_id4server.dll
 
 
 
-
+dotnet MsgService.dll --ip 127.0.0.1 --port 5001
+dotnet ProductService.dll --ip 127.0.0.1 --port 5002
