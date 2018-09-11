@@ -32,3 +32,39 @@ dotnet smsservice2.dll --ip 127.0.0.1 --port 5002
 
 dotnet ocelotserver2.dll
 
+
+
+
+set ASPNETCORE_URLS=http://127.0.0.1:5001
+
+dotnet JWTTokenServer1.dll
+http://127.0.0.1:5001
+
+
+
+
+set ASPNETCORE_URLS=http://127.0.0.1:5002
+dotnet calcservice3.dll
+
+
+
+
+set ASPNETCORE_URLS=http://127.0.0.1:5000
+dotnet ocelotserver3.dll
+
+
+
+
+
+
+dotnet ID4.IdServer.dll
+
+
+
+
+set ASPNETCORE_URLS=http://127.0.0.1:10000
+dotnet ocelot_id4server.dll
+
+
+
+

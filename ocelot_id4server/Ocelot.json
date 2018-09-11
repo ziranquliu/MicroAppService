@@ -1,0 +1,21 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "DownstreamPathTemplate": "/{url}",
+      "UpstreamPathTemplate": "/chat1/{url}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "ReRouteIsCaseSensitive": false,
+      "DownstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ChatKey",
+        "AllowedScopes": []
+      }
+    }
+  ]
+}
