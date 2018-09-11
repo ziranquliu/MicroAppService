@@ -8,21 +8,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace ID4.Ocelot1
+namespace LoginService
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-    WebHost.CreateDefaultBuilder(args)
-        .UseStartup<Startup>()
-        .ConfigureAppConfiguration((hostingContext, builder) => {
-            builder.AddJsonFile("Ocelot.json", false, true);
-        })
-        .Build();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+            .UseUrls("http://127.0.0.1:6000")
+                .UseStartup<Startup>();
     }
 }

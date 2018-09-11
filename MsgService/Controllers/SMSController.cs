@@ -19,6 +19,12 @@ namespace MsgService.Controllers
         [HttpPost(nameof(Send_LX))]
         public void Send_LX(SendSMSRequest model)
         {
+            string name = this.User.Identity.Name;//读取的就是"Name"这个特殊的 Claims 的值 
+            string userId = this.User.FindFirst("UserId").Value;
+            string realName = this.User.FindFirst("RealName").Value;
+            string email = this.User.FindFirst("Email").Value;
+            Console.WriteLine($"name={name},userId={userId},realName={realName},email={email}");
+
             Console.WriteLine($"通过联想短信接口向{model.PhoneNum}发送短信{model.Msg}");
         }
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ID4.IdServer.用户名密码登录;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,10 +31,23 @@ namespace ID4.IdServer
             //.AddInMemoryApiResources(Config.GetApiResources())
             //.AddInMemoryClients(Config.GetClients());
 
+            //    services.AddIdentityServer()
+            //.AddDeveloperSigningCredential()
+            //.AddInMemoryApiResources(Config.GetApiResources1())
+            //.AddInMemoryClients(Config.GetClients1());
+
+            var idResources = new List<IdentityResource>
+                {
+                    new IdentityResources.OpenId(), //必须要添加，否则报无效的 scope 错误           
+                    new IdentityResources.Profile()
+                };
             services.AddIdentityServer()
-        .AddDeveloperSigningCredential()
-        .AddInMemoryApiResources(Config.GetApiResources1())
-        .AddInMemoryClients(Config.GetClients1());
+                .AddDeveloperSigningCredential()
+                .AddInMemoryIdentityResources(idResources)
+                .AddInMemoryApiResources(Config.GetApiResources2())
+                .AddInMemoryClients(Config.GetClients2())
+                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                .AddProfileService<ProfileService>();
 
             //services.AddMvc();
         }
