@@ -69,3 +69,25 @@ dotnet ocelot_id4server.dll
 
 dotnet MsgService.dll --ip 127.0.0.1 --port 5001
 dotnet ProductService.dll --ip 127.0.0.1 --port 5002
+
+
+dotnet ocelottest1.dll
+
+
+
+Ocelot+Consul 
+
+dotnet MsgService.dll --ip 127.0.0.1 --port 5002
+
+
+Exception: Unable to start Ocelot, errors are: Unable to start Ocelot, errors are: Unable to start Ocelot because either a ReRoute or GlobalConfiguration are using ServiceDiscoveryOptions but no ServiceDiscoveryFinderDelegate has been registered in dependency injection container. Are you missing a package like Ocelot.Provider.Consul and services.AddConsul() or Ocelot.Provider.Eureka and services.AddEureka()?
+##############################################
+services.AddOcelot().AddConsul();
+##############################################
+
+
+
+
+
+
+
