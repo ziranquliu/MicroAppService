@@ -2,7 +2,9 @@
 using Polly.Caching;
 using Polly.Timeout;
 using System;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace pollytest1
 {
@@ -10,13 +12,116 @@ namespace pollytest1
     {
         private static void Main(string[] args)
         {
+            //TEST1();
+            没返回值的例子();
+
+            Console.ReadKey();
+        }
+
+        public static async void 没返回值的例子()
+        {
+            Policy policy = Policy
+       .Handle<Exception>()
+       .FallbackAsync(async c =>
+       {
+           Console.WriteLine("执行出错");
+       }, async ex =>
+       {//对于没有返回值的，这个参数直接是异常
+           Console.WriteLine(ex);
+       });
+            policy = policy.WrapAsync(Policy.TimeoutAsync(3, TimeoutStrategy.Pessimistic, async (context, timespan, task) =>
+            {
+                Console.WriteLine("timeout");
+            }));
+            await policy.ExecuteAsync(async () =>
+            {
+                Console.WriteLine("开始任务");
+                await Task.Delay(5000);//注意不能用Thread.Sleep(5000);
+                Console.WriteLine("完成任务");
+            });
+        }
+
+        public static async void 带返回值的例子()
+        {
+            Policy<byte[]> policy = Policy<byte[]>.Handle<Exception>()
+            .FallbackAsync(async c =>
+            {
+                Console.WriteLine("执行出错");
+                return new byte[0];
+            }, async r =>
+            {
+                Console.WriteLine(r.Exception);
+            });
+            policy = policy.WrapAsync(Policy.TimeoutAsync(20, TimeoutStrategy.Pessimistic, async (context, timespan, task) =>
+            {
+                Console.WriteLine("timeout");
+            }));
+            var bytes = await policy.ExecuteAsync(async () =>
+            {
+                Console.WriteLine("开始任务");
+                HttpClient httpClient = new HttpClient();
+                var result = await httpClient.GetByteArrayAsync("http://static.rupeng.com/upload/chatimage/20183/07EB793A4C247A654B31B4D14EC64BCA.png");
+                Console.WriteLine("完成任务");
+                return result;
+            });
+            Console.WriteLine("bytes长度" + bytes.Length);
+        }
+
+        private static void TEST1()
+        {
             //策略封装
             //可以把多个ISyncPolicy合并到一起执行：
             //policy3 = policy1.Wrap(policy2);
             //执行policy3就会把policy1、policy2封装到一起执行
             //policy9 = Policy.Wrap(policy1, policy2, policy3, policy4, policy5); 把更多一起封装。
 
-            Console.ReadKey();
+            //Policy<string> policy = Policy<string>.Handle<Exception>() //故障
+            //    .Fallback(() =>//动作
+            //    {
+            //        Console.WriteLine("执行出错");
+            //        return "降级的值";
+            //    });
+            //string value = policy.Execute(() =>
+            //{
+            //    Console.WriteLine("开始任务");
+            //    throw new Exception("Hello world!");
+            //    Console.WriteLine("完成任务");
+            //    return "正常的值";
+            //});
+            //Console.WriteLine("返回值：" + value);
+
+            //Policy policyRetry = Policy.Handle<Exception>().Retry(3);
+            //Policy policyFallback = Policy.Handle<Exception>()
+            //     .Fallback(() =>
+            //     {
+            //         Console.WriteLine("降级");
+            //     });
+            ////Wrap：包裹。policyRetry在里面，policyFallback裹在外面。
+            ////如果里面出现了故障，则把故障抛出来给外面
+            //Policy policy = policyFallback.Wrap(policyRetry);
+            //policy.Execute(() =>
+            //{
+            //    Console.WriteLine("开始任务");
+            //    if (DateTime.Now.Second % 10 != 0)
+            //    {
+            //        throw new Exception("出错");
+            //    }
+            //    Console.WriteLine("完成任务");
+            //});
+
+            Policy policy = Policy
+            .Handle<Exception>()    //定义所处理的故障
+            .Fallback(() =>
+            {
+                Console.WriteLine("执行出错");
+            });
+            policy = policy.Wrap(Policy.Timeout(2, TimeoutStrategy.Pessimistic));
+            policy.Execute(() =>
+            {
+                Console.WriteLine("开始任务");
+                Thread.Sleep(5000);
+                Console.WriteLine("完成任务");
+            });
         }
 
         /// <summary>
@@ -56,6 +161,9 @@ namespace pollytest1
            .Fallback(() =>
            {
                Console.WriteLine("执行出错");
+           }, ex =>
+           {
+               Console.WriteLine("详细异常对象" + ex);
            });
             policy = policy.Wrap(Policy.Timeout(2, TimeoutStrategy.Pessimistic));
 
@@ -146,6 +254,9 @@ namespace pollytest1
                     .Fallback(() =>
                     {
                         Console.WriteLine("出错了");
+                    }, ex =>
+                    {
+                        Console.WriteLine("详细异常对象" + ex);
                     });
                 policy.Execute(() =>
                 {

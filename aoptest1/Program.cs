@@ -10,6 +10,7 @@ namespace aoptest1
             ProxyGeneratorBuilder proxyGeneratorBuilder = new ProxyGeneratorBuilder();
             using (IProxyGenerator proxyGenerator = proxyGeneratorBuilder.Build())
             {
+                //注意p指向的对象是AspectCore生成的Person的动态子类的对象，直接new Person是无法被拦截的。
                 Person p = proxyGenerator.CreateClassProxy<Person>();
                 p.Say("Hello World");
                 Console.WriteLine(p.GetType());
