@@ -1,0 +1,55 @@
+重要的事情说三遍,强烈建议使用第二种方法!第二种方法!第二!;
+
+开放端口的方法：
+
+方法一：命令行方式
+               1. 开放端口命令： /sbin/iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+               2.保存：/etc/rc.d/init.d/iptables save
+               3.重启服务：/etc/init.d/iptables restart
+               4.查看端口是否开放：/sbin/iptables -L -n
+    
+
+ 方法二：直接编辑/etc/sysconfig/iptables文件
+               1.编辑/etc/sysconfig/iptables文件：vi /etc/sysconfig/iptables
+                   加入内容并保存：-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
+               2.重启服务：/etc/init.d/iptables restart
+               3.查看端口是否开放：/sbin/iptables -L -n
+
+但是我用方法一一直保存不上，查阅网上发现直接修改文件不需要iptables save，重启下iptables 重新加载下配置。iptables save 是将当前的iptables写入到/etc/sysconfig/iptables。我不save直接restart也不行，所以还是方法二吧
+
+ 
+
+查询端口是否有进程守护用如下命令grep对应端口，如80为端口号
+例：netstat -nalp|grep 80
+
+
+
+
+
+命令一
+
+netstat -a    查看所有服务端口
+
+命令二
+
+nmap +ip地址
+
+yum install nmap  安装nmap软件包
+
+linux开放服务端口的设置
+
+/etc/sysconfig/iptables
+
+vi iptables
+
+加入如下内容
+
+ -A INPUT -p tcp -m tcp --dport 6001 -j ACCEPT 
+然后保存退出，重启服务
+/etc/init.d/iptables restarts
+查看端口是否开放
+/sbin/iptables -L -n
+
+
+
+consul agent -dev -ui -node=consul-dev -client=192.168.118.131

@@ -1,0 +1,49 @@
+主流的Linux大多使用init.d或systemd来注册服务。下面以centos6.6演示init.d注册服务；以centos7.1演示systemd注册服务。
+
+　1.　基于Linux的init.d部署
+
+sudo ln -s /var/apps/xxxx.jar  /etc/init.d/Consul
+
+其中 Consul就是服务名
+
+service Consul start　　  启动服务
+
+service Consul stop　　　停止服务
+
+service Consul status　　服务状态
+
+chkconfig Consul on       开机启动
+
+ 
+
+　　2.  基于Linux的systemd部署
+
+在/etc/systemd/system/目录下新建文件Consul.service，填入下面内容：
+
+[Unit]
+
+Description=Consul
+
+After=syslog.target
+
+[Serive]
+
+ExecStart=/usr/local/bin/consul agent -dev -ui -node=consul-dev -client=192.168.118.131
+
+[Install]
+
+WantedBy=multi-user.target
+
+注意，在实际使用中修改Description和ExecStart后面的内容
+
+systemctl start Consul 或  systemctl start Consul.service           启动服务
+
+systemctl stop Consul 或  systemctl stop Consul.service           停止服务
+
+systemctl status Consul 或  systemctl status Consul.service       服务状态
+
+systemctl enable Consul 或  systemctl enable Consul.service       开机启动
+
+journalctl -u Consul 或  journalctl -u Consul.service           启动服务
+
+ 

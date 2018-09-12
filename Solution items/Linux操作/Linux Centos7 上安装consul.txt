@@ -1,0 +1,25 @@
+1.下载
+
+wget https://releases.hashicorp.com/consul/0.7.5/consul_0.7.5_linux_amd64.zip 
+
+2.解压
+
+unzip consul_0.7.5_linux_amd64.zip
+
+
+3.执行以下 ./consul 出现以下信息就说明安装成功
+
+4.启动consul
+
+我的linux ip地址为:10.11.3.161
+
+ ./consul agent -dev -ui -node=consul-dev -client=192.168.118.131
+然后在虚拟机浏览器中输 http://192.168.118.131:8500 
+
+然后我在本机上访问consul 发现访问不了，后发现centos的防火墙比较严，8500端口没有打开，执行以下命令即行：
+
+[root@localhost soft]# firewall-cmd --zone=public --add-port=8500/tcp --permanent  
+
+[root@localhost soft]# systemctl stop firewalld.service 
+[root@localhost soft]# systemctl start firewalld.service 
+这样再启动consul，就可以访问了
