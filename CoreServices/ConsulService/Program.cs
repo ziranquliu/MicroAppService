@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using PeterKottas.DotNetCore.WindowsService;
+using System.Diagnostics;
 
 namespace ConsulService
 {
@@ -41,34 +42,49 @@ namespace ConsulService
 
             var _logger = svcProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
-            ServiceRunner<ExampleService>.Run(config =>
-            {
-                var name = config.GetDefaultName();
-                config.Service(serviceConfig =>
+            //string ConsulPath = Program.Configuration["Consul:Path"];
+            //string CmdArg = Program.Configuration["Consul:CmdArg"];
+
+            ServiceRunner<FileService>.Run(config =>
                 {
-                    serviceConfig.ServiceFactory((extraArguments, controller) =>
+                    var name = config.GetDefaultName();
+                    config.Service(serviceConfig =>
                     {
-                        return new ExampleService(controller, svcProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ExampleService>());
-                    });
+                        serviceConfig.ServiceFactory((extraArguments, controller) =>
+                        {
+                            return new FileService(controller, svcProvider.GetRequiredService<ILoggerFactory>().CreateLogger<FileService>());
+                        });
 
-                    serviceConfig.OnStart((service, extraParams) =>
-                    {
-                        _logger.LogTrace("Service {0} started", name);
-                        service.Start();
-                    });
+                        serviceConfig.OnStart((service, extraParams) =>
+                        {
+                            _logger.LogTrace("Service {0} started", name);
+                            service.Start();
+                        });
 
-                    serviceConfig.OnStop(service =>
-                    {
-                        _logger.LogTrace("Service {0} stopped", name);
-                        service.Stop();
-                    });
+                        serviceConfig.OnStop(service =>
+                        {
+                            _logger.LogTrace("Service {0} stopped", name);
+                            service.Stop();
+                        });
 
-                    serviceConfig.OnError(e =>
-                    {
-                        _logger.LogError(e, string.Format("Service {0} errored with exception", name));
+                        serviceConfig.OnShutdown(service =>
+                        {
+                            _logger.LogTrace("Service {0} Shutdown", name);
+                            service.Stop();
+                        });
+
+                        serviceConfig.OnUnInstall(service =>
+                        {
+                            _logger.LogTrace("Service {0} UnInstall", name);
+                            service.Stop();
+                        });
+
+                        serviceConfig.OnError(e =>
+                        {
+                            _logger.LogError(e, string.Format("Service {0} errored with exception", name));
+                        });
                     });
                 });
-            });
         }
     }
 }
