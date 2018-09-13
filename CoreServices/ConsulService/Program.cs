@@ -11,15 +11,17 @@ namespace ConsulService
 {
     internal class Program
     {
+        internal static IConfigurationRoot Configuration;
+
         public static void Main(string[] args)
         {
 #if !DEBUG
-            var configuration = new ConfigurationBuilder()
+            Configuration = new ConfigurationBuilder()
                 .SetBasePath(PlatformServices.Default.Application.ApplicationBasePath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 #else
-            var configuration = new ConfigurationBuilder()
+            Configuration = new ConfigurationBuilder()
                 .SetBasePath(PlatformServices.Default.Application.ApplicationBasePath)
                 .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
                 .Build();

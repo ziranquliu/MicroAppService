@@ -4,6 +4,7 @@ using PeterKottas.DotNetCore.WindowsService.Base;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -28,9 +29,28 @@ namespace ConsulService
         public void Start()
         {
             StartBase();
+
+            string ConsulPath = Program.Configuration["Consul:Path"];
+            string CmdArg = Program.Configuration["Consul:CmdArg"];
+
             Timers.Start("Poller", 1000, () =>
             {
-                _logger.LogInformation(string.Format("Polling at {0}\n", DateTime.Now.ToString("o")));
+                string processName = ConsulPath.Substring(ConsulPath.LastIndexOf("\\") + 1).Replace(".exe", "");
+                Process[] processs = Process.GetProcessesByName(processName);
+                if (processs.Length > 1)
+                {
+                    for (int i = 1; i < processs.Length; i++)
+                    {
+                        processs[i].Close();
+                        processs[i].Dispose();
+                    }
+                }
+                if (processs.Length == 0)
+                {
+                    string cmd = "\"" + ConsulPath + "\" " + CmdArg;
+                    Process.Start("cmd.exe", cmd);
+                }
+                //_logger.LogInformation(string.Format("Polling at {0}\n", DateTime.Now.ToString("o")));
             });
             _logger.LogTrace("Started\n");
         }
